@@ -1,16 +1,19 @@
-use std::ffi::CString;
-use std::os::raw::c_char;
+#![feature(proc_macro, wasm_custom_section, wasm_import_module)]
+extern crate wasm_bindgen;
+use wasm_bindgen::prelude::*;
 
-#[no_mangle]
-pub extern "C" fn getWelcomeMessage() -> *mut c_char {
-    CString::new("Hello from Rust!")
-        .unwrap()
-        .into_raw()
+#[wasm_bindgen]
+extern {
+    fn alert(s: &str);
+
+    #[wasm_bindgen(js_namespace = console)]
+    fn log(s: &str);
+
+    #[wasm_bindgen(js_namespace = console, js_name = log)]
+    fn console_log_u32(n: u32);
 }
 
-#[no_mangle]
-pub extern "C" fn dealloc_str(ptr: *mut c_char) {
-    unsafe {
-        let _ = CString::from_raw(ptr);
-    }
+#[wasm_bindgen]
+pub fn greet(name: &str) -> String {
+    format!("Hello, {}!", name)
 }
